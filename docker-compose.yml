@@ -1,0 +1,16 @@
+# Backend + PostgreSQL. (Frontend service will be added when the frontend exists.)
+services:
+  db:
+    image: postgres:16
+    environment: {POSTGRES_DB: astrahealth, POSTGRES_USER: astra, POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?set in .env}"}
+    volumes: [pgdata:/var/lib/postgresql/data]
+  api:
+    build: .
+    environment:
+      APP_ENV: production
+      DATABASE_URL: postgresql+psycopg2://astra:${POSTGRES_PASSWORD}@db:5432/astrahealth
+      JWT_SECRET_KEY: "${JWT_SECRET_KEY:?set in .env}"
+      CORS_ORIGINS: "${CORS_ORIGINS:-http://localhost:5173}"
+    ports: ["8000:8000"]
+    depends_on: [db]
+volumes: {pgdata: {}}
